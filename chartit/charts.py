@@ -6,6 +6,7 @@ from .highcharts import HCOptions
 from .validation import clean_pcso, clean_cso, clean_x_sortf_mapf_mts
 from .exceptions import APIInputError
 from .chartdata import PivotDataPool, DataPool
+import simplejson
 
 
 class Chart(object):
@@ -391,6 +392,21 @@ class Chart(object):
                             opts['data'].append(y_value)
                     self.hcoptions['series'].extend(y_hco_list_multi)
 
+    def to_JSON(self):
+        """Load Chart's data as JSON
+        Useful in Ajax requests. Example:
+
+        Return JSON from this method and response to client:
+        return JsonResponse(cht.to_JSON(), safe=False)
+
+        Then use jQuery load data and create Highchart:
+        $(function(){
+        $.getJSON("/data",function(data){
+            $('#container').highcharts(JSON.parse(data));
+            });
+        });"""
+        return simplejson.dumps(self.hcoptions)
+
 
 class PivotChart(object):
 
@@ -554,3 +570,18 @@ class PivotChart(object):
         self.hcoptions['series'] = hco_series
         self.hcoptions['xAxis']['categories'] = [':'.join(cv) for cv in
                                                  self.datasource.cv]
+
+    def to_JSON(self):
+        """Load PivotChart's data as JSON
+        Useful in Ajax requests. Example:
+
+        Return JSON from this method and response to client:
+        return JsonResponse(cht.to_JSON(), safe=False)
+
+        Then use jQuery load data and create Highchart:
+        $(function(){
+        $.getJSON("/data",function(data){
+            $('#container').highcharts(JSON.parse(data));
+            });
+        });"""
+        return simplejson.dumps(self.hcoptions)
